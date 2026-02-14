@@ -216,11 +216,25 @@ export default function Game() {
     <div className="min-h-screen bg-dark-bg p-6 pb-32">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center">
+        <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-white">La Loba</h1>
           <p className="text-gray-400 text-sm">
             {players.length} jugadores · Ronda {game.current_round}
           </p>
+          {game?.code && (
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-gray-500 text-xs">Código:</p>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(game.code)
+                  alert('Código copiado!')
+                }}
+                className="bg-dark-card px-3 py-1 rounded text-casino-green font-mono text-sm font-bold hover:bg-gray-800 transition-colors"
+              >
+                {game.code} 📋
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Banner cuando alguien cortó */}
