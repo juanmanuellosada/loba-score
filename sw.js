@@ -1,8 +1,9 @@
 // Service Worker para Loba Score
 const CACHE_NAME = 'loba-score-v1'
+const BASE_PATH = '/loba-score'
 const urlsToCache = [
-  '/',
-  '/index.html',
+  BASE_PATH + '/',
+  BASE_PATH + '/index.html',
 ]
 
 // Instalación
