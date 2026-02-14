@@ -73,6 +73,20 @@ export default function Game() {
     try {
       setSubmittingScore(true)
 
+      // Si cortó (score = 0), marcar en la partida
+      if (score === 0) {
+        const { error: gameUpdateError } = await supabase
+          .from('games')
+          .update({
+            current_round_cut_by: currentPlayer.id,
+          })
+          .eq('id', gameId)
+
+        if (gameUpdateError) {
+          console.error('Error marking cut:', gameUpdateError)
+        }
+      }
+
       // Insertar puntaje en la tabla scores
       const { error: scoreError } = await supabase
         .from('scores')
@@ -138,6 +152,7 @@ export default function Game() {
         .from('games')
         .update({
           current_round: game.current_round + 1,
+          current_round_cut_by: null, // Limpiar quien cortó
         })
         .eq('id', gameId)
 
@@ -193,6 +208,10 @@ export default function Game() {
     s => s.round_number === game.current_round
   ).length === activePlayers.length
 
+  // Detectar si alguien cortó
+  const cutByPlayerId = game?.current_round_cut_by
+  const cutByPlayer = cutByPlayerId ? players.find(p => p.id === cutByPlayerId) : null
+
   return (
     <div className="min-h-screen bg-dark-bg p-6 pb-32">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -203,6 +222,23 @@ export default function Game() {
             {players.length} jugadores · Ronda {game.current_round}
           </p>
         </div>
+
+        {/* Banner cuando alguien cortó */}
+        {cutByPlayer && (
+          <div className="bg-casino-gold/20 border-2 border-casino-gold rounded-lg p-4 animate-pulse">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">✂️</span>
+              <div className="flex-1">
+                <p className="text-casino-gold font-bold text-lg">
+                  ¡{cutByPlayer.name} cortó!
+                </p>
+                <p className="text-gray-300 text-sm">
+                  Todos deben cargar sus puntos
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Alert Banner */}
         <AlertBanner players={players} currentPlayerId={currentPlayer.id} />
@@ -221,6 +257,7 @@ export default function Game() {
               onSubmit={submitScore}
               disabled={submittingScore}
               playerName={currentPlayer.name}
+              someoneCut={!!cutByPlayer}
             />
           </div>
         )}

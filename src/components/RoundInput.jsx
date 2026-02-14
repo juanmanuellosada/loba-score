@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Calculator, Grid3x3 } from 'lucide-react'
 import CardSelector from './CardSelector'
 
-export default function RoundInput({ onSubmit, disabled, playerName }) {
+export default function RoundInput({ onSubmit, disabled, playerName, someoneCut = false }) {
   const [mode, setMode] = useState('quick') // 'quick' o 'direct'
   const [directValue, setDirectValue] = useState('')
 
@@ -67,7 +67,11 @@ export default function RoundInput({ onSubmit, disabled, playerName }) {
 
       {/* Contenido según modo */}
       {mode === 'quick' ? (
-        <CardSelector onConfirm={handleCardSelectorConfirm} disabled={disabled} />
+        <CardSelector
+          onConfirm={handleCardSelectorConfirm}
+          disabled={disabled}
+          someoneCut={someoneCut}
+        />
       ) : (
         <div className="space-y-4">
           <div className="space-y-2">

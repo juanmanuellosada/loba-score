@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CARDS, CARD_VALUES } from '../lib/gameLogic'
 import { Minus, Plus } from 'lucide-react'
 
-export default function CardSelector({ onConfirm, disabled }) {
+export default function CardSelector({ onConfirm, disabled, someoneCut = false }) {
   const [selectedCards, setSelectedCards] = useState({})
 
   const total = Object.entries(selectedCards).reduce((sum, [card, count]) => {
@@ -54,10 +54,16 @@ export default function CardSelector({ onConfirm, disabled }) {
       {/* Botón especial "Corté" */}
       <button
         onClick={handleCut}
-        disabled={disabled}
-        className="btn-primary w-full bg-casino-gold hover:bg-amber-600"
+        disabled={disabled || someoneCut}
+        className={`btn-primary w-full ${
+          someoneCut
+            ? 'bg-gray-600 cursor-not-allowed opacity-50'
+            : 'bg-casino-gold hover:bg-amber-600'
+        }`}
+        title={someoneCut ? 'Ya cortaron en esta ronda' : 'Cortar (0 puntos)'}
       >
         ✂️ Corté (0 puntos)
+        {someoneCut && <span className="text-xs ml-2">(Ya cortaron)</span>}
       </button>
 
       {/* Divisor */}
