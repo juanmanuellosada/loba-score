@@ -124,7 +124,8 @@ export default function Lobby() {
         return
       }
 
-      // El evento de Realtime redirigirá automáticamente
+      // El host navega inmediatamente (los demás por Realtime)
+      navigate(`/game/${gameId}`)
     } catch (error) {
       console.error('Error starting game:', error)
       alert('Error al iniciar la partida')
