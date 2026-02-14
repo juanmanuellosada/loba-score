@@ -1,4 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#0a0a0a"/>
-  <path d="M 50 20 C 40 20, 25 30, 25 45 C 25 55, 35 60, 40 65 L 35 80 L 50 80 L 65 80 L 60 65 C 65 60, 75 55, 75 45 C 75 30, 60 20, 50 20 Z" fill="#10b981"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#0a0a0a"/>
+  <!-- Pica ♠ -->
+  <g transform="translate(32, 32)">
+    <!-- Hojas superiores -->
+    <circle cx="-8" cy="-8" r="10" fill="#10b981"/>
+    <circle cx="8" cy="-8" r="10" fill="#10b981"/>
+    <!-- Hoja inferior -->
+    <circle cx="0" cy="2" r="10" fill="#10b981"/>
+    <!-- Punta -->
+    <path d="M 0,-22 L -6,-10 L 6,-10 Z" fill="#10b981"/>
+    <!-- Base -->
+    <path d="M -4,10 L -6,18 L 6,18 L 4,10 Z" fill="#10b981"/>
+  </g>
 </svg>
