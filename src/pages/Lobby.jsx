@@ -31,6 +31,65 @@ export default function Lobby() {
     })
   }, [sessionId, players, currentPlayer, isHost])
 
+  // Si no está en la partida después de cargar, intentar re-unirse
+  useEffect(() => {
+    const rejoinIfNeeded = async () => {
+      // Esperar a que carguen los jugadores
+      if (loading) return
+
+      // Si ya está en la partida, todo bien
+      if (currentPlayer) return
+
+      // Si no hay jugadores todavía, esperar
+      if (players.length === 0) return
+
+      // Si llegó aquí, está viendo la sala pero no está en la lista
+      console.log('⚠️ Player not found in game, attempting to rejoin...')
+
+      const playerName = getPlayerName()
+      if (!playerName) {
+        alert('Necesitás ingresar tu nombre para unirte')
+        navigate('/')
+        return
+      }
+
+      // Verificar que la partida siga en waiting
+      if (game?.status !== 'waiting') {
+        alert('Esta partida ya comenzó')
+        navigate('/')
+        return
+      }
+
+      // Re-unirse a la partida
+      try {
+        const { error } = await supabase
+          .from('players')
+          .insert({
+            game_id: gameId,
+            name: playerName,
+            session_id: sessionId,
+            is_host: false,
+            total_score: 0,
+          })
+
+        if (error) {
+          console.error('Error rejoining:', error)
+          // Si el error es que ya existe, ignorarlo
+          if (!error.message.includes('duplicate')) {
+            alert('Error al volver a unirse a la partida')
+            navigate('/')
+          }
+        } else {
+          console.log('✅ Rejoined successfully')
+        }
+      } catch (error) {
+        console.error('Error rejoining:', error)
+      }
+    }
+
+    rejoinIfNeeded()
+  }, [loading, currentPlayer, players, game, gameId, sessionId, navigate])
+
   // Cargar datos iniciales
   useEffect(() => {
     loadGameData()
