@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 /**
@@ -67,30 +67,42 @@ export function useScoresRealtime(gameId, onScoresChange) {
  * Hook para suscribirse a cambios en la tabla de partidas
  */
 export function useGameRealtime(gameId, onGameChange) {
+  const callbackRef = useRef(onGameChange)
+
+  // Mantener el callback actualizado
+  useEffect(() => {
+    callbackRef.current = onGameChange
+  }, [onGameChange])
+
   useEffect(() => {
     if (!gameId) return
+
+    console.log('🔗 Subscribing to game changes for:', gameId)
 
     const channel = supabase
       .channel(`game_${gameId}`)
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'UPDATE',
           schema: 'public',
           table: 'games',
           filter: `id=eq.${gameId}`,
         },
         (payload) => {
-          console.log('Game update:', payload)
-          if (onGameChange) {
-            onGameChange(payload)
+          console.log('🎮 Game update received:', payload)
+          if (callbackRef.current) {
+            callbackRef.current(payload)
           }
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('📡 Game subscription status:', status)
+      })
 
     return () => {
+      console.log('🔌 Unsubscribing from game:', gameId)
       supabase.removeChannel(channel)
     }
-  }, [gameId, onGameChange])
+  }, [gameId])
 }
