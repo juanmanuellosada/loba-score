@@ -98,7 +98,12 @@ export default function Lobby() {
   })
 
   const startGame = async () => {
-    if (!isHost) return
+    console.log('🎮 Starting game...', { isHost, playersCount: players.length, gameId })
+
+    if (!isHost) {
+      console.log('❌ Not host, aborting')
+      return
+    }
 
     if (players.length < 2) {
       alert('Se necesitan al menos 2 jugadores para iniciar')
@@ -107,28 +112,34 @@ export default function Lobby() {
 
     try {
       setStartingGame(true)
+      console.log('⏳ Updating game status...')
 
       // Actualizar estado de la partida
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from('games')
         .update({
           status: 'playing',
           current_round: 1,
         })
         .eq('id', gameId)
+        .select()
+
+      console.log('📊 Update result:', { error, data })
 
       if (error) {
-        console.error('Error starting game:', error)
-        alert('Error al iniciar la partida')
+        console.error('❌ Error starting game:', error)
+        alert('Error al iniciar la partida: ' + error.message)
         setStartingGame(false)
         return
       }
 
       // El host navega inmediatamente (los demás por Realtime)
+      console.log('✅ Navigating to game...')
       navigate(`/game/${gameId}`)
+      console.log('✅ Navigate called')
     } catch (error) {
-      console.error('Error starting game:', error)
-      alert('Error al iniciar la partida')
+      console.error('❌ Unexpected error:', error)
+      alert('Error inesperado al iniciar la partida: ' + error.message)
       setStartingGame(false)
     }
   }
