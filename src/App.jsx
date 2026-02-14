@@ -8,7 +8,7 @@ import History from './pages/History'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/loba-score">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/create" element={<CreateGame />} />
