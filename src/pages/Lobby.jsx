@@ -20,6 +20,17 @@ export default function Lobby() {
   const currentPlayer = players.find(p => p.session_id === sessionId)
   const isHost = currentPlayer?.is_host || false
 
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 Lobby Debug:', {
+      sessionId,
+      playersCount: players.length,
+      players: players.map(p => ({ name: p.name, session_id: p.session_id, is_host: p.is_host })),
+      currentPlayer: currentPlayer ? { name: currentPlayer.name, is_host: currentPlayer.is_host } : null,
+      isHost,
+    })
+  }, [sessionId, players, currentPlayer, isHost])
+
   // Cargar datos iniciales
   useEffect(() => {
     loadGameData()
