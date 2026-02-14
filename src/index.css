@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: #0a0a0a;
+  color: #ffffff;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Evitar scroll horizontal */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Estilo para botones táctiles */
+@layer components {
+  .btn-primary {
+    @apply bg-casino-green text-white font-semibold py-3 px-6 rounded-lg shadow-lg
+           hover:bg-emerald-600 active:scale-95 transition-all duration-200
+           min-h-[44px] text-center;
+  }
+
+  .btn-secondary {
+    @apply bg-dark-card text-white font-semibold py-3 px-6 rounded-lg shadow-lg
+           hover:bg-gray-800 active:scale-95 transition-all duration-200
+           min-h-[44px] text-center border border-gray-700;
+  }
+
+  .card {
+    @apply bg-dark-card rounded-xl p-6 shadow-xl border border-gray-800;
+  }
+
+  .input-field {
+    @apply bg-dark-card border border-gray-700 rounded-lg px-4 py-3 text-white
+           focus:outline-none focus:ring-2 focus:ring-casino-green
+           min-h-[44px] w-full;
+  }
+}
