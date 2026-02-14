@@ -84,6 +84,9 @@ export default function Game() {
 
         if (gameUpdateError) {
           console.error('Error marking cut:', gameUpdateError)
+        } else {
+          // Recargar el juego inmediatamente para mostrar la alerta
+          await reload()
         }
       }
 

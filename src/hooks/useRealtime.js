@@ -2,65 +2,91 @@ import { useEffect, useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 /**
- * Hook para suscribirse a cambios en tiempo real de Supabase
+ * Hook para suscribirse a cambios en la tabla de jugadores
  */
-export function useRealtime(table, gameId, onUpdate) {
-  const [isConnected, setIsConnected] = useState(false)
+export function usePlayersRealtime(gameId, onPlayersChange) {
+  const callbackRef = useRef(onPlayersChange)
+
+  // Mantener el callback actualizado
+  useEffect(() => {
+    callbackRef.current = onPlayersChange
+  }, [onPlayersChange])
 
   useEffect(() => {
     if (!gameId) return
 
+    console.log('🔗 Subscribing to players changes for:', gameId)
+
     const channel = supabase
-      .channel(`${table}_${gameId}`)
+      .channel(`players_${gameId}`)
       .on(
         'postgres_changes',
         {
-          event: '*', // INSERT, UPDATE, DELETE
+          event: '*',
           schema: 'public',
-          table: table,
+          table: 'players',
           filter: `game_id=eq.${gameId}`,
         },
         (payload) => {
-          console.log(`Realtime ${table}:`, payload)
-          if (onUpdate) {
-            onUpdate(payload)
+          console.log('👥 Players update received:', payload)
+          if (callbackRef.current) {
+            callbackRef.current(payload)
           }
         }
       )
       .subscribe((status) => {
-        console.log(`Subscription status (${table}):`, status)
-        setIsConnected(status === 'SUBSCRIBED')
+        console.log('📡 Players subscription status:', status)
       })
 
     return () => {
-      console.log(`Unsubscribing from ${table}`)
+      console.log('🔌 Unsubscribing from players:', gameId)
       supabase.removeChannel(channel)
     }
-  }, [table, gameId, onUpdate])
-
-  return { isConnected }
-}
-
-/**
- * Hook para suscribirse a cambios en la tabla de jugadores
- */
-export function usePlayersRealtime(gameId, onPlayersChange) {
-  return useRealtime('players', gameId, (payload) => {
-    if (onPlayersChange) {
-      onPlayersChange(payload)
-    }
-  })
+  }, [gameId])
 }
 
 /**
  * Hook para suscribirse a cambios en la tabla de puntajes
  */
 export function useScoresRealtime(gameId, onScoresChange) {
-  return useRealtime('scores', gameId, (payload) => {
-    if (onScoresChange) {
-      onScoresChange(payload)
+  const callbackRef = useRef(onScoresChange)
+
+  // Mantener el callback actualizado
+  useEffect(() => {
+    callbackRef.current = onScoresChange
+  }, [onScoresChange])
+
+  useEffect(() => {
+    if (!gameId) return
+
+    console.log('🔗 Subscribing to scores changes for:', gameId)
+
+    const channel = supabase
+      .channel(`scores_${gameId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'scores',
+          filter: `game_id=eq.${gameId}`,
+        },
+        (payload) => {
+          console.log('🎯 Scores update received:', payload)
+          if (callbackRef.current) {
+            callbackRef.current(payload)
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Scores subscription status:', status)
+      })
+
+    return () => {
+      console.log('🔌 Unsubscribing from scores:', gameId)
+      supabase.removeChannel(channel)
     }
-  })
+  }, [gameId])
 }
 
 /**
